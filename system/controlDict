@@ -1,0 +1,99 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     simpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         500;
+
+deltaT          1;
+
+writeControl    timeStep;
+
+writeInterval   50;
+
+purgeWrite      3;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+
+#include       "include/initialConditions"
+
+functions
+{
+#includeFunc residuals
+
+forces
+{
+type forces;
+libs ("libforces.so");
+writeControl    timeStep;
+log	yes;
+patches (wall);
+rho rhoInf;
+rhoInf 1.2;
+CofR (0 0 0);
+}
+
+
+forceCoeffs
+{
+type forceCoeffs;
+libs ("libforces.so");
+writeControl    timeStep;
+log	yes;
+patches (wall);
+rho rhoInf;
+rhoInf 1.2;
+CofR (0 0 0);
+liftDir (0 0 1);
+dragDir (1 0 0);
+magUInf $vinf;
+pitchAxis (0 1 0);
+lRef 1;
+Aref 1; // área de fatia
+}
+
+
+yPlus
+{
+type        yPlus;
+libs        ("libfieldFunctionObjects.so");
+writeControl    timeStep;
+writeInterval	100;
+log	yes;
+}
+
+}
+
+
+// ************************************************************************* //
